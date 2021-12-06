@@ -1,0 +1,9 @@
+version: "1"
+rules:
+  - base: master
+    upstream: anasty17:master
+    mergeMethod: merge
+    mergeUnstable: false
+  - base: heroku
+    upstream: anasty17:heroku
+    mergeMethod: merge
