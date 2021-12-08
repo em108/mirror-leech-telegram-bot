@@ -30,6 +30,7 @@ class MirrorStatus:
     STATUS_EXTRACTING = "Extracting"
     STATUS_SPLITTING = "Splitting"
     STATUS_CHECKING = "CheckingUp"
+    STATUS_SEEDING = "Seeding"
 
 SIZE_UNITS = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
 
@@ -91,6 +92,8 @@ def getAllDownload():
                     MirrorStatus.STATUS_SPLITTING,
                     MirrorStatus.STATUS_CLONING,
                     MirrorStatus.STATUS_UPLOADING,
+                    MirrorStatus.STATUS_CHECKING,
+                    MirrorStatus.STATUS_SEEDING,
                 ]
                 and dlDetails
             ):
@@ -128,6 +131,7 @@ def get_readable_message():
                 MirrorStatus.STATUS_ARCHIVING,
                 MirrorStatus.STATUS_EXTRACTING,
                 MirrorStatus.STATUS_SPLITTING,
+                MirrorStatus.STATUS_SEEDING,
             ]:
                 msg += f"\n{get_progress_bar_string(download)} {download.progress()}"
                 if download.status() == MirrorStatus.STATUS_CLONING:
@@ -147,6 +151,13 @@ def get_readable_message():
                            f" , <b>Leechers:</b> <code>{download.torrent_info().num_leechs}</code>"
                 except:
                     pass
+                msg += f"\n<code>/{BotCommands.CancelMirror} {download.gid()}</code>"
+            elif download.status() == MirrorStatus.STATUS_SEEDING:
+                msg += f"\n<b>Size: </b>{download.size()}"
+                msg += f"\n<b>Speed: </b>{get_readable_file_size(download.torrent_info().upspeed)}/s"
+                msg += f" | <b>Uploaded: </b>{get_readable_file_size(download.torrent_info().uploaded)}"
+                msg += f"\n<b>Ratio: </b>{round(download.torrent_info().ratio, 3)}"
+                msg += f" | <b>Time: </b>{get_readable_time(download.torrent_info().seeding_time)}"
                 msg += f"\n<code>/{BotCommands.CancelMirror} {download.gid()}</code>"
             else:
                 msg += f"\n<b>Size: </b>{download.size()}"

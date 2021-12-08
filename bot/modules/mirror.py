@@ -15,7 +15,7 @@ from telegram import InlineKeyboardMarkup
 from requests.exceptions import RequestException
 
 from bot import Interval, INDEX_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, \
-                BUTTON_SIX_NAME, BUTTON_SIX_URL, BLOCK_MEGA_FOLDER, BLOCK_MEGA_LINKS, VIEW_LINK, aria2, \
+                BUTTON_SIX_NAME, BUTTON_SIX_URL, BLOCK_MEGA_FOLDER, BLOCK_MEGA_LINKS, VIEW_LINK, aria2, QB_SEED, \
                 dispatcher, DOWNLOAD_DIR, download_dict, download_dict_lock, ZIP_UNZIP_LIMIT, TG_SPLIT_SIZE, LOGGER
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.shortenurl import short_url
@@ -240,18 +240,22 @@ class MirrorListener(listeners.MirrorListeners):
                 if fmsg != '':
                     time.sleep(1.5)
                     sendMessage(msg + fmsg, self.bot, self.update)
-            with download_dict_lock:
-                try:
-                    fs_utils.clean_download(download_dict[self.uid].path())
-                except FileNotFoundError:
-                    pass
-                del download_dict[self.uid]
-                count = len(download_dict)
-            if count == 0:
-                self.clean()
+            if self.isQbit and QB_SEED:
+                return
             else:
-                update_all_messages()
-            return
+                with download_dict_lock:
+                    try:
+                        fs_utils.clean_download(download_dict[self.uid].path())
+                    except FileNotFoundError:
+                        pass
+                    del download_dict[self.uid]
+                    count = len(download_dict)
+                if count == 0:
+                    self.clean()
+                else:
+                    update_all_messages()
+                return
+
         with download_dict_lock:
             msg = f'<a href="{link}">{download_dict[self.uid].name()}</a> <i>({download_dict[self.uid].size()})</i>'
             if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
@@ -277,10 +281,20 @@ class MirrorListener(listeners.MirrorListeners):
             del download_dict[self.uid]
             count = len(download_dict)
         sendMarkup(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
-        if count == 0:
-            self.clean()
+        if self.isQbit and QB_SEED:
+            return
         else:
-            update_all_messages()
+            with download_dict_lock:
+                try:
+                    fs_utils.clean_download(download_dict[self.uid].path())
+                except FileNotFoundError:
+                    pass
+                del download_dict[self.uid]
+                count = len(download_dict)
+            if count == 0:
+                self.clean()
+            else:
+                update_all_messages()
 
     def onUploadError(self, error):
         e_str = error.replace('<', '').replace('>', '')
