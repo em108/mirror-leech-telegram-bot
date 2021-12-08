@@ -253,7 +253,7 @@ class MirrorListener(listeners.MirrorListeners):
                 update_all_messages()
             return
         with download_dict_lock:
-            msg = f'<a href="{link}">{download_dict[self.uid].name()}</a> ({download_dict[self.uid].size()})'
+            msg = f'<a href="{link}">{download_dict[self.uid].name()}</a> <i>({download_dict[self.uid].size()})</i>'
             if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
                 msg += f'\n<b>Files: </b><code>{files}</code>'
             else:
@@ -264,7 +264,7 @@ class MirrorListener(listeners.MirrorListeners):
                 share_url = requests.utils.requote_uri(f'{INDEX_URL}/{download_dict[self.uid].name()}')
                 if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
                     share_url += '/'
-                msg += f'\n\n<a href="{share_url}">Index Link</a>'
+                msg += f'\n\n<i><a href="{share_url}">Index Link</a></i>'
 
             if self.message.from_user.username:
                 uname = f"@{self.message.from_user.username}"

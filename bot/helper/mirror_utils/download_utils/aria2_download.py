@@ -71,7 +71,7 @@ class AriaDownloadHelper:
         sleep(4)
         dl = getDownloadByGid(gid)
         if dl:
-            dl.getListener().onDownloadError('Dead torrent!')
+            dl.getListener().onDownloadError('no seeds!')
 
     @new_thread
     def __onDownloadError(self, api, gid):
