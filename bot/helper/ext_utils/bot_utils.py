@@ -139,7 +139,7 @@ def get_readable_message():
                 elif download.status() == MirrorStatus.STATUS_UPLOADING:
                     msg += f"\n<b>Uploaded:</b> <code>{get_readable_file_size(download.processed_bytes())} / {download.size()}</code>"
                 else:
-                    msg += f"\n<b>Downloaded:</b> <code>{get_readable_file_size(download.processed_bytes())} / {download.size()}</code>"
+                    msg += f"\n<b>Progress:</b> <code>{get_readable_file_size(download.processed_bytes())} / {download.size()}</code>"
                 msg += f"\n<b>Stats:</b> <code>{download.speed()}</code> , <code>{download.eta()}</code>"
                 try:
                     msg += f"\n<b>Seeders:</b> <code>{download.aria_download().num_seeders}</code>" \
